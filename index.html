@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Colorful Calculator</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #1a1a2e; font-family: sans-serif; }
+    .calc-wrap { width: 320px; background: #fff; border-radius: 24px; padding: 20px; box-shadow: 0 8px 40px rgba(0,0,0,0.3); }
+    .display {
+      background: linear-gradient(135deg, #6C3AE8, #C13AE8);
+      border-radius: 20px;
+      padding: 20px 24px;
+      margin-bottom: 14px;
+      text-align: right;
+      box-shadow: 0 4px 20px rgba(108,58,232,0.35);
+    }
+    .display .expr { font-size: 13px; color: rgba(255,255,255,0.6); min-height: 18px; }
+    .display .val  { font-size: 36px; font-weight: 500; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .btn {
+      border: none; border-radius: 14px; height: 64px;
+      font-size: 18px; font-weight: 500; cursor: pointer;
+      transition: transform 0.1s, filter 0.1s;
+    }
+    .btn:hover  { filter: brightness(1.1); }
+    .btn:active { transform: scale(0.93); }
+    .btn.num   { background: #F0EAFF; color: #4A2DA8; }
+    .btn.clear { background: #FFE5F0; color: #C0195A; }
+    .btn.op    { background: #FFF0D6; color: #B05A00; font-size: 20px; }
+    .btn.eq    { background: linear-gradient(135deg, #FF6B6B, #FF8E53); color: #fff; font-size: 22px; }
+    .btn.zero  { grid-column: span 2; text-align: left; padding-left: 24px; }
+  </style>
+</head>
+<body>
+<div class="calc-wrap">
+  <div class="display">
+    <div class="expr" id="expr"></div>
+    <div class="val"  id="val">0</div>
+  </div>
+  <div class="grid">
+    <button class="btn clear" onclick="ac()">AC</button>
+    <button class="btn clear" onclick="toggleSign()">+/−</button>
+    <button class="btn clear" onclick="pct()">%</button>
+    <button class="btn op"    onclick="op('/')">÷</button>
+
+    <button class="btn num" onclick="num('7')">7</button>
+    <button class="btn num" onclick="num('8')">8</button>
+    <button class="btn num" onclick="num('9')">9</button>
+    <button class="btn op"  onclick="op('*')">×</button>
+
+    <button class="btn num" onclick="num('4')">4</button>
+    <button class="btn num" onclick="num('5')">5</button>
+    <button class="btn num" onclick="num('6')">6</button>
+    <button class="btn op"  onclick="op('-')">−</button>
+
+    <button class="btn num" onclick="num('1')">1</button>
+    <button class="btn num" onclick="num('2')">2</button>
+    <button class="btn num" onclick="num('3')">3</button>
+    <button class="btn op"  onclick="op('+')">+</button>
+
+    <button class="btn num zero" onclick="num('0')">0</button>
+    <button class="btn num" onclick="dot()">.</button>
+    <button class="btn eq"  onclick="calc()">=</button>
+  </div>
+</div>
+<script>
+  let cur='0', prev='', operator=null, newNum=false;
+  const valEl=document.getElementById('val');
+  const exprEl=document.getElementById('expr');
+  const opSym={'/':'÷','*':'×','-':'−','+':'+'};
+  function update(v){valEl.textContent=v;}
+  function num(d){if(newNum){cur=d;newNum=false;}else cur=cur==='0'?d:cur+d;update(cur);}
+  function dot(){if(newNum){cur='0.';newNum=false;}else if(!cur.includes('.'))cur+='.';update(cur);}
+  function op(o){
+    if(operator&&!newNum){prev=String(eval(prev+operator+cur));cur=prev;}
+    else prev=cur;
+    operator=o;newNum=true;
+    exprEl.textContent=prev+' '+opSym[o];update(cur);
+  }
+  function calc(){
+    if(!operator||newNum)return;
+    exprEl.textContent=prev+' '+opSym[operator]+' '+cur+' =';
+    const r=eval(prev+operator+cur);
+    cur=String(parseFloat(r.toFixed(10)));
+    operator=null;prev='';newNum=true;update(cur);
+  }
+  function ac(){cur='0';prev='';operator=null;newNum=false;exprEl.textContent='';update('0');}
+  function toggleSign(){cur=String(parseFloat(cur)*-1);update(cur);}
+  function pct(){cur=String(parseFloat(cur)/100);update(cur);}
+</script>
+</body>
+</html>
